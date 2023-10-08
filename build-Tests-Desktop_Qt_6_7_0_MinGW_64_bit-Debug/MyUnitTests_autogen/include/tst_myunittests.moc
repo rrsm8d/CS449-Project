@@ -1,0 +1,219 @@
+/****************************************************************************
+** Meta object code from reading C++ file 'tst_myunittests.cpp'
+**
+** Created by: The Qt Meta Object Compiler version 68 (Qt 6.7.0)
+**
+** WARNING! All changes made in this file will be lost!
+*****************************************************************************/
+
+#include <QtCore/qmetatype.h>
+
+#include <QtCore/qtmochelpers.h>
+
+#include <memory>
+
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'tst_myunittests.cpp' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 68
+#error "This file was generated using the moc from 6.7.0. It"
+#error "cannot be used with the include files from this version of Qt."
+#error "(The moc has changed too much.)"
+#endif
+
+#ifndef Q_CONSTINIT
+#define Q_CONSTINIT
+#endif
+
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
+QT_WARNING_DISABLE_GCC("-Wuseless-cast")
+namespace {
+
+#ifdef QT_MOC_HAS_STRINGDATA
+struct qt_meta_stringdata_CLASSMyUnitTestsENDCLASS_t {};
+constexpr auto qt_meta_stringdata_CLASSMyUnitTestsENDCLASS = QtMocHelpers::stringData(
+    "MyUnitTests",
+    "BoardSize_WhenValid_IsSet",
+    "",
+    "BoardSize_WhenInvalid_IsAdjusted",
+    "Board_WhenBoardSizeIsSet_IsClearedAndResized",
+    "GameMode_WhenRadioClicked_IsSet",
+    "BoardAndPlayer_WhenRadioClicked_IsCleared",
+    "BoardAndPlayer_WhenEmptyCellClicked_Simple_IsSet",
+    "Board_WhenFilledCellClicked_Simple_IsIgnored",
+    "Board_WhenAnyCellClickedFinished_Simple_IsIgnored",
+    "Board_WhenOOBCellClicked_Simple_IsIgnored",
+    "BoardAndPlayer_WhenResetButtonClicked_Simple_IsSet",
+    "Replay_WhenReplayButtonClicked_Simple_IsPlayed",
+    "BoardAndPlayer_WhenEmptyCellClickedNoMatch_General_IsSet",
+    "Board_WhenFilledCellClicked_General_IsIgnored",
+    "Board_WhenAnyCellClickedFinished_General_IsIgnored",
+    "Board_WhenEmptyCellClickedMakesMatch_General_IsSet",
+    "Board_WhenResetButtonClicked_General_IsSet",
+    "Replay_WhenReplayButtonClicked_General_IsPlayed"
+);
+#else  // !QT_MOC_HAS_STRINGDATA
+#error "qtmochelpers.h not found or too old."
+#endif // !QT_MOC_HAS_STRINGDATA
+} // unnamed namespace
+
+Q_CONSTINIT static const uint qt_meta_data_CLASSMyUnitTestsENDCLASS[] = {
+
+ // content:
+      12,       // revision
+       0,       // classname
+       0,    0, // classinfo
+      17,   14, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       0,       // signalCount
+
+ // slots: name, argc, parameters, tag, flags, initial metatype offsets
+       1,    0,  116,    2, 0x08,    1 /* Private */,
+       3,    0,  117,    2, 0x08,    2 /* Private */,
+       4,    0,  118,    2, 0x08,    3 /* Private */,
+       5,    0,  119,    2, 0x08,    4 /* Private */,
+       6,    0,  120,    2, 0x08,    5 /* Private */,
+       7,    0,  121,    2, 0x08,    6 /* Private */,
+       8,    0,  122,    2, 0x08,    7 /* Private */,
+       9,    0,  123,    2, 0x08,    8 /* Private */,
+      10,    0,  124,    2, 0x08,    9 /* Private */,
+      11,    0,  125,    2, 0x08,   10 /* Private */,
+      12,    0,  126,    2, 0x08,   11 /* Private */,
+      13,    0,  127,    2, 0x08,   12 /* Private */,
+      14,    0,  128,    2, 0x08,   13 /* Private */,
+      15,    0,  129,    2, 0x08,   14 /* Private */,
+      16,    0,  130,    2, 0x08,   15 /* Private */,
+      17,    0,  131,    2, 0x08,   16 /* Private */,
+      18,    0,  132,    2, 0x08,   17 /* Private */,
+
+ // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+
+       0        // eod
+};
+
+Q_CONSTINIT const QMetaObject MyUnitTests::staticMetaObject = { {
+    QMetaObject::SuperData::link<QObject::staticMetaObject>(),
+    qt_meta_stringdata_CLASSMyUnitTestsENDCLASS.offsetsAndSizes,
+    qt_meta_data_CLASSMyUnitTestsENDCLASS,
+    qt_static_metacall,
+    nullptr,
+    qt_incomplete_metaTypeArray<qt_meta_stringdata_CLASSMyUnitTestsENDCLASS_t,
+        // Q_OBJECT / Q_GADGET
+        QtPrivate::TypeAndForceComplete<MyUnitTests, std::true_type>,
+        // method 'BoardSize_WhenValid_IsSet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'BoardSize_WhenInvalid_IsAdjusted'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenBoardSizeIsSet_IsClearedAndResized'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'GameMode_WhenRadioClicked_IsSet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'BoardAndPlayer_WhenRadioClicked_IsCleared'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'BoardAndPlayer_WhenEmptyCellClicked_Simple_IsSet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenFilledCellClicked_Simple_IsIgnored'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenAnyCellClickedFinished_Simple_IsIgnored'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenOOBCellClicked_Simple_IsIgnored'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'BoardAndPlayer_WhenResetButtonClicked_Simple_IsSet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Replay_WhenReplayButtonClicked_Simple_IsPlayed'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'BoardAndPlayer_WhenEmptyCellClickedNoMatch_General_IsSet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenFilledCellClicked_General_IsIgnored'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenAnyCellClickedFinished_General_IsIgnored'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenEmptyCellClickedMakesMatch_General_IsSet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Board_WhenResetButtonClicked_General_IsSet'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'Replay_WhenReplayButtonClicked_General_IsPlayed'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
+    >,
+    nullptr
+} };
+
+void MyUnitTests::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        auto *_t = static_cast<MyUnitTests *>(_o);
+        (void)_t;
+        switch (_id) {
+        case 0: _t->BoardSize_WhenValid_IsSet(); break;
+        case 1: _t->BoardSize_WhenInvalid_IsAdjusted(); break;
+        case 2: _t->Board_WhenBoardSizeIsSet_IsClearedAndResized(); break;
+        case 3: _t->GameMode_WhenRadioClicked_IsSet(); break;
+        case 4: _t->BoardAndPlayer_WhenRadioClicked_IsCleared(); break;
+        case 5: _t->BoardAndPlayer_WhenEmptyCellClicked_Simple_IsSet(); break;
+        case 6: _t->Board_WhenFilledCellClicked_Simple_IsIgnored(); break;
+        case 7: _t->Board_WhenAnyCellClickedFinished_Simple_IsIgnored(); break;
+        case 8: _t->Board_WhenOOBCellClicked_Simple_IsIgnored(); break;
+        case 9: _t->BoardAndPlayer_WhenResetButtonClicked_Simple_IsSet(); break;
+        case 10: _t->Replay_WhenReplayButtonClicked_Simple_IsPlayed(); break;
+        case 11: _t->BoardAndPlayer_WhenEmptyCellClickedNoMatch_General_IsSet(); break;
+        case 12: _t->Board_WhenFilledCellClicked_General_IsIgnored(); break;
+        case 13: _t->Board_WhenAnyCellClickedFinished_General_IsIgnored(); break;
+        case 14: _t->Board_WhenEmptyCellClickedMakesMatch_General_IsSet(); break;
+        case 15: _t->Board_WhenResetButtonClicked_General_IsSet(); break;
+        case 16: _t->Replay_WhenReplayButtonClicked_General_IsPlayed(); break;
+        default: ;
+        }
+    }
+    (void)_a;
+}
+
+const QMetaObject *MyUnitTests::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
+}
+
+void *MyUnitTests::qt_metacast(const char *_clname)
+{
+    if (!_clname) return nullptr;
+    if (!strcmp(_clname, qt_meta_stringdata_CLASSMyUnitTestsENDCLASS.stringdata0))
+        return static_cast<void*>(this);
+    return QObject::qt_metacast(_clname);
+}
+
+int MyUnitTests::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QObject::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 17)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 17;
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 17)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 17;
+    }
+    return _id;
+}
+QT_WARNING_POP
