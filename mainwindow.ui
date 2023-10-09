@@ -367,7 +367,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Add a button</string>
+     <string>Debug</string>
     </property>
    </widget>
   </widget>

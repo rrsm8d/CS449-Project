@@ -36,7 +36,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// TO-DO: Reset turn order on resize (Blue should always go first)
 void MainWindow::ResizeBoard(int size)
 {
     // Get rid of the current buttons first
