@@ -27,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent):
     QPushButton *resetButton = MainWindow::findChild<QPushButton *>("resetButton");
     connect(resetButton, SIGNAL(released()), this, SLOT(ResetBoard()));
 
+    QPushButton *debugButton = MainWindow::findChild<QPushButton *>("debugButton");
+    connect(debugButton, SIGNAL(released()), this, SLOT(PrintDebugStats()));
+
     // Initialize the first grid on startup
     ResizeBoard(boardSizeSelector->value());
 }
@@ -61,8 +64,8 @@ void MainWindow::ResizeBoard(int size)
     widget = nullptr;
     grid = nullptr;
     // Adjust logical code
-    this->logic.SetBoardSize(size);
-    //this->logic.ClearBoard();
+    this->logic->SetBoardSize(size);
+    this->logic->ClearBoard();
 }
 
 void MainWindow::ClearBoard()
@@ -98,7 +101,7 @@ void MainWindow::ChangeState()
     int indexY = button->objectName()[1].digitValue();
 
     // Verify this button is not out of bounds (This should never happen?)
-    if(!this->logic.isValidCell(indexX, indexY))
+    if(!this->logic->isValidCell(indexX, indexY))
     {
         button = nullptr;
         return;
@@ -107,18 +110,31 @@ void MainWindow::ChangeState()
     // If the button even exists...
     if (button) {
          // If this is a valid spot to place a letter
-        if(this->logic.isEmptyCell(indexX, indexY))
+        if(this->logic->isEmptyCell(indexX, indexY))
         {
             // Grab the players letter from logic code, set it to the button
-            QString playerLetter = QString::fromStdString(this->logic.currentTurn->playerLetter);
+            QString playerLetter = QString::fromStdString(this->logic->currentTurn->playerLetter);
             button->setText(playerLetter);
             // Update logic
-            this->logic.MakeMove(indexX, indexY);
-            qDebug() << "Assigned value to " << button->objectName() << ", switching turns"; // Change debug message when game logic is finally properly implemented
+            this->logic->MakeMove(indexX, indexY);
+            qDebug() << "Assigned value to " << button->objectName();
             // Update turnLabel
             QLabel *turnLabel = MainWindow::findChild<QLabel *>("turnLabel");
-            QString labelText = QString::fromStdString(this->logic.currentTurn->playerColor + " 's turn");
+            QString labelText = QString::fromStdString(this->logic->currentTurn->playerColor + " 's turn");
             turnLabel->setText(labelText);
+            if(logic->isFinished)
+            {
+                Player* winner = logic->DetermineWinner();
+                if(winner != nullptr)
+                {
+                    labelText = QString::fromStdString(winner->playerColor + " has won. Score: " + std::to_string(winner->playerScore));
+                } else
+                {
+                    labelText = "Its a tie!";
+                }
+                turnLabel->setText(labelText);
+                DisableBoard();
+            }
         } else qDebug() << button->objectName() << " already has a value!";
     }
     button = nullptr;
@@ -131,8 +147,10 @@ void MainWindow::SetSimpleGame(bool checked)
     {
         // Reset board and remake it
         QSpinBox *boardSizeSelector = MainWindow::findChild<QSpinBox *>("sizeSpinBox");
-        ResizeBoard(boardSizeSelector->value());
-        this->logic.SetGameMode(0);
+        int boardSize = boardSizeSelector->value();
+        ResizeBoard(boardSize);
+        delete logic;
+        logic = new SimpleGame(boardSize);
         qDebug() << "The game mode has been set to simple";
         boardSizeSelector = nullptr;
     }
@@ -145,8 +163,10 @@ void MainWindow::SetGeneralGame(bool checked)
     {
         // Reset board and remake it
         QSpinBox *boardSizeSelector = MainWindow::findChild<QSpinBox *>("sizeSpinBox");
-        ResizeBoard(boardSizeSelector->value());
-        this->logic.SetGameMode(1);
+        int boardSize = boardSizeSelector->value();
+        ResizeBoard(boardSize);
+        delete logic;
+        logic = new GeneralGame(boardSize);
         qDebug() << "The game mode has been set to general";
         boardSizeSelector = nullptr;
     }
@@ -164,33 +184,77 @@ void MainWindow::SetPlayerLetter(bool checked)
             QRadioButton *p2Radio = MainWindow::findChild<QRadioButton *>("p2ORadio");
             p2Radio->setChecked(!p2Radio->isChecked());
             p2Radio = nullptr;
-            this->logic.player1.playerLetter = "S";
-            this->logic.player2.playerLetter = "O";
+            this->logic->player1.playerLetter = "S";
+            this->logic->player2.playerLetter = "O";
             ResetBoard();
         } else if(button->objectName() == "p1ORadio")
         {
             QRadioButton *p2Radio = MainWindow::findChild<QRadioButton *>("p2SRadio");
             p2Radio->setChecked(!p2Radio->isChecked());
             p2Radio = nullptr;
-            this->logic.player1.playerLetter = "O";
-            this->logic.player2.playerLetter = "S";
+            this->logic->player1.playerLetter = "O";
+            this->logic->player2.playerLetter = "S";
             ResetBoard();
         } else if(button->objectName() == "p2SRadio")
         {
             QRadioButton *p1Radio = MainWindow::findChild<QRadioButton *>("p1ORadio");
             p1Radio->setChecked(!p1Radio->isChecked());
             p1Radio = nullptr;
-            this->logic.player1.playerLetter = "O";
-            this->logic.player2.playerLetter = "S";
+            this->logic->player1.playerLetter = "O";
+            this->logic->player2.playerLetter = "S";
             ResetBoard();
         } else if(button->objectName() == "p2ORadio")
         {
             QRadioButton *p1Radio = MainWindow::findChild<QRadioButton *>("p1SRadio");
             p1Radio->setChecked(!p1Radio->isChecked());
             p1Radio = nullptr;
-            this->logic.player1.playerLetter = "S";
-            this->logic.player2.playerLetter = "O";
+            this->logic->player1.playerLetter = "S";
+            this->logic->player2.playerLetter = "O";
             ResetBoard();
         } else qDebug() << "Critical error, signal from unknown QRadioButton: " << button->objectName();
+    }
+}
+
+void MainWindow::PrintDebugStats()
+{
+    for(auto &vec: this->logic->board)
+    {
+        for(char &c : vec)
+        {
+            std::cout << c << ", ";
+        }
+        std::cout << std::endl;
+    }
+    //QPushButton* button = (QPushButton *)sender();
+    //button->setEnabled(false);
+    DisableBoard();
+}
+
+void MainWindow::DisableBoard()
+{
+    QGridLayout *grid = MainWindow::findChild<QGridLayout *>("gridLayout");
+    QLayoutItem *item;
+    // This code is bad, and disables the widgets instead of the buttons
+    /*
+    while ((item = grid->takeAt(0))) {
+        if (item->widget()->isEnabled()) {
+            QPushButton* button = qobject_cast<QPushButton*>(item->widget*());
+            button->setEnabled(false);
+            item->widget()->setEnabled(false);
+        }
+    }
+    */
+
+    // Iterate through each button in the grid, disable them
+    for (int row = 0; row < this->logic->board.size(); ++row) {
+        for (int column = 0; column < this->logic->board.size(); ++column) {
+            QWidget* widget = grid->itemAtPosition(row, column)->widget();
+
+            if (widget && qobject_cast<QPushButton*>(widget)) {
+                // Check if the widget is a QPushButton
+                QPushButton* button = qobject_cast<QPushButton*>(widget);
+                button->setEnabled(false);
+            }
+        }
     }
 }

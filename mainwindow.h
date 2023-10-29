@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include "gamelogic.h"
+#include "simplegame.h"
+#include "generalgame.h"
 #include <QMainWindow>
 #include <QDebug>
 
@@ -19,7 +21,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    GameLogic logic = {7, 2}; // Not sure why, but the program wants me to create the object like this.
+    GameLogic* logic = new SimpleGame(4);
 
 private slots: // Executed whenever a signal is submitted
 
@@ -27,9 +29,12 @@ private slots: // Executed whenever a signal is submitted
     void ClearBoard(); // Remove all buttons within the grid
     void ChangeState(); // Adding X/O to buttons
     void ResetBoard(); // Clearing values on cells
+    void DisableBoard(); // Disable buttons on a finished game
 
     void SetSimpleGame(bool checked); // Set game logic.
     void SetGeneralGame(bool checked); // Set game logic.
     void SetPlayerLetter(bool checked); // Update gamelogic
+
+    void PrintDebugStats(); // debug
 };
 #endif // MAINWINDOW_H

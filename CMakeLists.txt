@@ -24,6 +24,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         gamelogic.h gamelogic.cpp
+        simplegame.h simplegame.cpp
+        generalgame.h generalgame.cpp
 
 
 
