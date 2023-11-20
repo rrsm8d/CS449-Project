@@ -1,5 +1,6 @@
 #include "gamelogic.h"
 
+
 GameLogic::GameLogic(int boardSize)
 {
     // Resize the board vector to current board size
@@ -11,6 +12,8 @@ GameLogic::GameLogic(int boardSize)
     this->player2.playerColor = "Red";
     this->player1.playerScore = 0;
     this->player2.playerScore = 0;
+    this->player1.isCpu = false;
+    this->player2.isCpu = false;
     this->currentTurn = &player1;
     //
     this->moveCount = 0;
@@ -38,6 +41,22 @@ void GameLogic::SetBoardSize(int boardSize)
     ClearBoard();
 }
 
+void GameLogic::SetPlayerCpu(int player)
+{
+    if(player == 1)
+        this->player1.isCpu = true;
+    else if(player == 2)
+        this->player2.isCpu = true;
+}
+
+void GameLogic::SetPlayerHuman(int player)
+{
+    if(player == 1)
+        this->player1.isCpu = false;
+    else if(player == 2)
+        this->player2.isCpu = false;
+}
+
 // This function is old and overridden
 void GameLogic::MakeMove(int x, int y)
 {
@@ -45,6 +64,11 @@ void GameLogic::MakeMove(int x, int y)
     {
         this->board[x][y] = this->currentTurn->playerLetter[0];
     }
+}
+
+void GameLogic::CpuMove()
+{
+    std::cerr << "Unusual call to GameLogic::CpuMove();";
 }
 
 Player* GameLogic::DetermineWinner()
@@ -64,7 +88,7 @@ void GameLogic::ClearBoard()
     {
         for(char &c : vec)
         {
-            c = 'W'; // A value that has not been asigned yet will be W.
+            c = '_'; // A value that has not been asigned yet will be _.
         }
     }
     this->currentTurn = &this->player1;
@@ -72,6 +96,10 @@ void GameLogic::ClearBoard()
     this->player2.playerScore = 0;
     this->isFinished = false;
     this->moveCount = 0;
+
+    // Is the first player a computer? If so, make its move automatically.
+    if(this->currentTurn->isCpu)
+        CpuMove();
 }
 
 void GameLogic::SwitchTurn()
@@ -85,7 +113,7 @@ void GameLogic::SwitchTurn()
 
 bool GameLogic::isEmptyCell(int x, int y)
 {
-    if(this->board[x][y] == 'W')
+    if(this->board[x][y] == '_')
         return true;
     return false;
 }

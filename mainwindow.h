@@ -30,10 +30,12 @@ private slots: // Executed whenever a signal is submitted
     void ChangeState(); // Adding X/O to buttons
     void ResetBoard(); // Clearing values on cells
     void DisableBoard(); // Disable buttons on a finished game
+    void UpdateBoard(); // Update the text on buttons and turn label
 
     void SetSimpleGame(bool checked); // Set game logic.
     void SetGeneralGame(bool checked); // Set game logic.
     void SetPlayerLetter(bool checked); // Update gamelogic
+    void SetPlayerCpu(bool checked); // Change player's controller
 
     void PrintDebugStats(); // debug
 };

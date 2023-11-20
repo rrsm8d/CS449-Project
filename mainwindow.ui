@@ -271,7 +271,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Simple Game</string>
+      <string>General Game</string>
      </property>
      <property name="checked">
       <bool>true</bool>
@@ -287,7 +287,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>General Game</string>
+      <string>Simple Game</string>
      </property>
     </widget>
    </widget>

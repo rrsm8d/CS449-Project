@@ -10,6 +10,7 @@ class SimpleGame : public GameLogic
 public:
     SimpleGame(int boardSize);
     void MakeMove(int x, int y) override;
+    void CpuMove() override;
 };
 
 #endif // SIMPLEGAME_H

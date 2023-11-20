@@ -10,6 +10,7 @@ class GeneralGame : public GameLogic
 public:
     GeneralGame(int boardSize);
     void MakeMove(int x, int y) override;
+    void CpuMove() override;
 };
 
 #endif // GENERALGAME_H

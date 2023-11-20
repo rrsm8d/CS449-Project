@@ -32,7 +32,7 @@ private slots:
 
     void BoardAndPlayer_WhenResetButtonClicked_Simple_IsSet(); // AC 5.1
     void Replay_WhenReplayButtonClicked_Simple_IsPlayed(); // AC 5.2 (WILL FAIL)
-    void Score_WhenGameIsFinished_Simple_IsCounted(); // AC 5.3 (NEW!)
+    void Score_WhenGameIsFinished_Simple_IsCounted(); // AC 5.3
 
     void BoardAndPlayer_WhenEmptyCellClickedNoMatch_General_IsSet(); // AC 6.1
     void Board_WhenFilledCellClicked_General_IsIgnored(); // AC 6.2
@@ -42,7 +42,10 @@ private slots:
 
     void Board_WhenResetButtonClicked_General_IsSet(); // AC 7.1
     void Replay_WhenReplayButtonClicked_General_IsPlayed(); // AC 7.2 (WILL FAIL)
-    void Score_WhenGameIsFinished_General_IsCounted(); // 7.3 (NEW!)
+    void Score_WhenGameIsFinished_General_IsCounted(); // 7.3
+
+    void Computer_WhenMakingMove_IsOptimal(); // 9.2
+    void Computer_WhenMakingMatch_Simple_IsChained(); // 9.3
 };
 
 MyUnitTests::MyUnitTests()
@@ -85,7 +88,7 @@ void MyUnitTests::Board_WhenBoardSizeIsSet_IsClearedAndResized()
     logic.SetBoardSize(6);
 
     QVERIFY(logic.board.size() == 6);
-    QVERIFY(logic.board[0][0] == 'W');
+    QVERIFY(logic.board[0][0] == '_');
     QVERIFY(playerCopy == logic.currentTurn); // currentPlayer should go back to player1
 }
 
@@ -119,7 +122,7 @@ void MyUnitTests::BoardAndPlayer_WhenRadioClicked_IsCleared()
     {
         for(char &c : vec)
         {
-            if(c != 'W') // If it has a value...
+            if(c != '_') // If it has a value...
             {
                 QFAIL("The board was not properly cleared");
             }
@@ -166,7 +169,7 @@ void MyUnitTests::Board_WhenAnyCellClickedFinished_Simple_IsIgnored()
     logic.MakeMove(3,2); // Arbitrary location
     // Should NOT change anything
     QVERIFY(playerCopy == logic.currentTurn);
-    QVERIFY(logic.board[3][2] == 'W');
+    QVERIFY(logic.board[3][2] == '_');
 }
 
 // AC 4.4
@@ -194,7 +197,7 @@ void MyUnitTests::BoardAndPlayer_WhenResetButtonClicked_Simple_IsSet()
     logic.MakeMove(0,0);
     logic.SetBoardSize(5); // Reset button shouldn't have a different board size
 
-    QVERIFY(logic.board[0][0] == 'W');
+    QVERIFY(logic.board[0][0] == '_');
     QVERIFY(playerCopy == logic.currentTurn);
 }
 
@@ -295,7 +298,7 @@ void MyUnitTests::Board_WhenResetButtonClicked_General_IsSet()
     logic.isFinished = true;
     logic.SetBoardSize(5); // Reset button shouldn't have a different board size
 
-    QVERIFY(logic.board[0][0] == 'W');
+    QVERIFY(logic.board[0][0] == '_');
     QVERIFY(playerCopy == logic.currentTurn);
     QVERIFY(!logic.isFinished);
 }
@@ -307,7 +310,7 @@ void MyUnitTests::Replay_WhenReplayButtonClicked_General_IsPlayed()
     QFAIL("Replay functionality not yet implemented");
 }
 
-// AC 7.3 (NEW!)
+// AC 7.3
 void MyUnitTests::Score_WhenGameIsFinished_General_IsCounted()
 {
     GeneralGame logic {4};
@@ -317,7 +320,38 @@ void MyUnitTests::Score_WhenGameIsFinished_General_IsCounted()
     QVERIFY(logic.player1.playerScore == 1 && logic.player2.playerScore == 0);
 }
 
+// 9.2
+void MyUnitTests::Computer_WhenMakingMove_IsOptimal()
+{
+    GeneralGame logic = {5};
+    logic.MakeMove(0,0);
+    logic.MakeMove(4,4);
+    logic.MakeMove(0,2);
+    // There is a matching move at (0,1). CPU should make the play there
+    logic.CpuMove();
+    QVERIFY(logic.board[0][1] == 'O');
+}
+
+// 9.3
+void MyUnitTests::Computer_WhenMakingMatch_Simple_IsChained()
+{
+    SimpleGame logic = {5};
+    logic.board[0][0] = 'S'; // S
+    logic.board[0][2] = 'S'; // S
+    logic.board[0][4] = 'S'; // S
+    logic.SwitchTurn(); // Change current player to O
+    logic.moveCount = 3;
+    // There are two matching moves at (0,1) and (0,3). CPU should make two plays there.
+    logic.CpuMove();
+
+    QVERIFY(logic.board[0][1] == 'O');
+    QVERIFY(logic.board[0][3] == 'O');
+}
 
 QTEST_APPLESS_MAIN(MyUnitTests)
 
 #include "tst_myunittests.moc"
+
+
+
+

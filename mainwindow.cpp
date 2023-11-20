@@ -19,10 +19,20 @@ MainWindow::MainWindow(QWidget *parent):
     connect(p1SRadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerLetter(bool)));
     QRadioButton *p1ORadio = MainWindow::findChild<QRadioButton *>("p1ORadio");
     connect(p1ORadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerLetter(bool)));
+    QRadioButton *p1HumanRadio = MainWindow::findChild<QRadioButton *>("p1HumanRadio");
+    connect(p1HumanRadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerCpu(bool)));
+    QRadioButton *p1ComputerRadio = MainWindow::findChild<QRadioButton *>("p1ComputerRadio");
+    connect(p1ComputerRadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerCpu(bool)));
+
+
     QRadioButton *p2SRadio = MainWindow::findChild<QRadioButton *>("p2SRadio");
     connect(p2SRadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerLetter(bool)));
     QRadioButton *p2ORadio = MainWindow::findChild<QRadioButton *>("p2ORadio");
     connect(p2ORadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerLetter(bool)));
+    QRadioButton *p2HumanRadio = MainWindow::findChild<QRadioButton *>("p2HumanRadio");
+    connect(p2HumanRadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerCpu(bool)));
+    QRadioButton *p2ComputerRadio = MainWindow::findChild<QRadioButton *>("p2ComputerRadio");
+    connect(p2ComputerRadio, SIGNAL(toggled(bool)), this, SLOT(SetPlayerCpu(bool)));
 
     QPushButton *resetButton = MainWindow::findChild<QPushButton *>("resetButton");
     connect(resetButton, SIGNAL(released()), this, SLOT(ResetBoard()));
@@ -65,7 +75,6 @@ void MainWindow::ResizeBoard(int size)
     grid = nullptr;
     // Adjust logical code
     this->logic->SetBoardSize(size);
-    this->logic->ClearBoard();
 }
 
 void MainWindow::ClearBoard()
@@ -91,6 +100,53 @@ void MainWindow::ResetBoard()
     QSpinBox *boardSizeSelector = MainWindow::findChild<QSpinBox *>("sizeSpinBox");
     ResizeBoard(boardSizeSelector->value());
     boardSizeSelector = nullptr;
+    // Special case when both players are CPU
+    if(this->logic->player1.isCpu && this->logic->player2.isCpu)
+    {
+        while(!this->logic->isFinished)
+            this->logic->CpuMove();
+    }
+    UpdateBoard();
+}
+
+void MainWindow::UpdateBoard()
+{
+    // First, iterate through all buttons and update their text
+    QGridLayout *grid = MainWindow::findChild<QGridLayout *>("gridLayout");
+    QLayoutItem *item;
+    for (int row = 0; row < this->logic->board.size(); ++row)
+    {
+        for (int column = 0; column < this->logic->board.size(); ++column)
+        {
+            QWidget* widget = grid->itemAtPosition(row, column)->widget();
+            // Check if the widget is a QPushButton, so nothing funky happens
+            if (widget && qobject_cast<QPushButton*>(widget))
+            {
+                QPushButton* button = qobject_cast<QPushButton*>(widget);
+                QChar value = this->logic->board[row][column];
+                button->setText(value);
+            }
+        }
+    }
+
+    // Update turnLabel
+    QLabel *turnLabel = MainWindow::findChild<QLabel *>("turnLabel");
+    QString labelText = QString::fromStdString(this->logic->currentTurn->playerColor + " 's turn");
+    turnLabel->setText(labelText);
+
+    if(logic->isFinished)
+    {
+        Player* winner = logic->DetermineWinner();
+        if(winner != nullptr)
+        {
+            labelText = QString::fromStdString(winner->playerColor + " has won. Score: " + std::to_string(winner->playerScore));
+        } else
+        {
+            labelText = "Its a tie!";
+        }
+        turnLabel->setText(labelText);
+        DisableBoard();
+    }
 }
 
 void MainWindow::ChangeState()
@@ -109,35 +165,28 @@ void MainWindow::ChangeState()
 
     // If the button even exists...
     if (button) {
-         // If this is a valid spot to place a letter
-        if(this->logic->isEmptyCell(indexX, indexY))
+         // If this is a valid spot to place a letter AND at least one player is human
+        if(this->logic->isEmptyCell(indexX, indexY) && !(this->logic->player1.isCpu && this->logic->player2.isCpu))
         {
-            // Grab the players letter from logic code, set it to the button
-            QString playerLetter = QString::fromStdString(this->logic->currentTurn->playerLetter);
-            button->setText(playerLetter);
             // Update logic
             this->logic->MakeMove(indexX, indexY);
             qDebug() << "Assigned value to " << button->objectName();
-            // Update turnLabel
-            QLabel *turnLabel = MainWindow::findChild<QLabel *>("turnLabel");
-            QString labelText = QString::fromStdString(this->logic->currentTurn->playerColor + " 's turn");
-            turnLabel->setText(labelText);
-            if(logic->isFinished)
-            {
-                Player* winner = logic->DetermineWinner();
-                if(winner != nullptr)
-                {
-                    labelText = QString::fromStdString(winner->playerColor + " has won. Score: " + std::to_string(winner->playerScore));
-                } else
-                {
-                    labelText = "Its a tie!";
-                }
-                turnLabel->setText(labelText);
-                DisableBoard();
-            }
+
+            // A CPU may have made a move too. Update the buttons that it makes moves to
+            if(this->logic->currentTurn->isCpu)
+                this->logic->CpuMove();
+
         } else qDebug() << button->objectName() << " already has a value!";
+
+        // Special case when both players are CPU
+        if(this->logic->player1.isCpu && this->logic->player2.isCpu)
+        {
+            while(!this->logic->isFinished)
+                this->logic->CpuMove();
+        }
     }
     button = nullptr;
+    UpdateBoard();
 }
 
 void MainWindow::SetSimpleGame(bool checked)
@@ -148,9 +197,13 @@ void MainWindow::SetSimpleGame(bool checked)
         // Reset board and remake it
         QSpinBox *boardSizeSelector = MainWindow::findChild<QSpinBox *>("sizeSpinBox");
         int boardSize = boardSizeSelector->value();
+        bool p1copy = this->logic->player1.isCpu;
+        bool p2copy = this->logic->player2.isCpu;
         ResizeBoard(boardSize);
         delete logic;
         logic = new SimpleGame(boardSize);
+        this->logic->player1.isCpu = p1copy;
+        this->logic->player2.isCpu = p2copy;
         qDebug() << "The game mode has been set to simple";
         boardSizeSelector = nullptr;
     }
@@ -164,9 +217,13 @@ void MainWindow::SetGeneralGame(bool checked)
         // Reset board and remake it
         QSpinBox *boardSizeSelector = MainWindow::findChild<QSpinBox *>("sizeSpinBox");
         int boardSize = boardSizeSelector->value();
+        bool p1copy = this->logic->player1.isCpu;
+        bool p2copy = this->logic->player2.isCpu;
         ResizeBoard(boardSize);
         delete logic;
         logic = new GeneralGame(boardSize);
+        this->logic->player1.isCpu = p1copy;
+        this->logic->player2.isCpu = p2copy;
         qDebug() << "The game mode has been set to general";
         boardSizeSelector = nullptr;
     }
@@ -215,6 +272,32 @@ void MainWindow::SetPlayerLetter(bool checked)
     }
 }
 
+void MainWindow::SetPlayerCpu(bool checked)
+{
+    if(checked)
+    {
+        QRadioButton* button = (QRadioButton *)sender();
+        // NOT a pretty way of implementing this. Need to update later
+        if(button->objectName() == "p1HumanRadio")
+        {
+            this->logic->SetPlayerHuman(1);
+            ResetBoard();
+        } else if(button->objectName() == "p1ComputerRadio")
+        {
+            this->logic->SetPlayerCpu(1);
+            ResetBoard();
+        } else if(button->objectName() == "p2HumanRadio")
+        {
+            this->logic->SetPlayerHuman(2);
+            ResetBoard();
+        } else if(button->objectName() == "p2ComputerRadio")
+        {
+            this->logic->SetPlayerCpu(2);
+            ResetBoard();
+        } else qDebug() << "Critical error, signal from unknown QRadioButton: " << button->objectName();
+    }
+}
+
 void MainWindow::PrintDebugStats()
 {
     for(auto &vec: this->logic->board)
@@ -234,17 +317,6 @@ void MainWindow::DisableBoard()
 {
     QGridLayout *grid = MainWindow::findChild<QGridLayout *>("gridLayout");
     QLayoutItem *item;
-    // This code is bad, and disables the widgets instead of the buttons
-    /*
-    while ((item = grid->takeAt(0))) {
-        if (item->widget()->isEnabled()) {
-            QPushButton* button = qobject_cast<QPushButton*>(item->widget*());
-            button->setEnabled(false);
-            item->widget()->setEnabled(false);
-        }
-    }
-    */
-
     // Iterate through each button in the grid, disable them
     for (int row = 0; row < this->logic->board.size(); ++row) {
         for (int column = 0; column < this->logic->board.size(); ++column) {
