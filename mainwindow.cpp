@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <thread>
 
 MainWindow::MainWindow(QWidget *parent):
       QMainWindow(parent),
@@ -40,6 +41,9 @@ MainWindow::MainWindow(QWidget *parent):
     QPushButton *debugButton = MainWindow::findChild<QPushButton *>("debugButton");
     connect(debugButton, SIGNAL(released()), this, SLOT(PrintDebugStats()));
 
+    QPushButton *replayButton = MainWindow::findChild<QPushButton *>("replayButton");
+    connect(replayButton, SIGNAL(released()), this, SLOT(ReplayMoves()));
+
     // Initialize the first grid on startup
     ResizeBoard(boardSizeSelector->value());
 }
@@ -75,6 +79,10 @@ void MainWindow::ResizeBoard(int size)
     grid = nullptr;
     // Adjust logical code
     this->logic->SetBoardSize(size);
+
+    // Also disable the replay button
+    QPushButton *replayButton = MainWindow::findChild<QPushButton *>("replayButton");
+    replayButton->setEnabled(false);
 }
 
 void MainWindow::ClearBoard()
@@ -83,8 +91,10 @@ void MainWindow::ClearBoard()
     // The following was made with help by GPT-3.5
     // Iterate through each widget in the grid, and delete them
     QLayoutItem *item;
-    while ((item = grid->takeAt(0))) {
-        if (item->widget()) {
+    while ((item = grid->takeAt(0)))
+    {
+        if (item->widget())
+        {
             delete item->widget();
         }
         delete item;
@@ -329,4 +339,60 @@ void MainWindow::DisableBoard()
             }
         }
     }
+    // Since the game is finished, also enable the replay functionality.
+    QPushButton *replayButton = MainWindow::findChild<QPushButton *>("replayButton");
+    replayButton->setEnabled(true);
+    this->logic->writeToFile();
+}
+
+void MainWindow::ReplayMoves()
+{
+    // Change each button to blank
+    QRadioButton* replayButton = (QRadioButton *)sender();
+    replayButton->setEnabled(false);
+    // Iterate through each button in the grid, change text
+    QGridLayout *grid = MainWindow::findChild<QGridLayout *>("gridLayout");
+    for (int row = 0; row < this->logic->board.size(); ++row) {
+        for (int column = 0; column < this->logic->board.size(); ++column) {
+            QWidget* widget = grid->itemAtPosition(row, column)->widget();
+
+            if (widget && qobject_cast<QPushButton*>(widget)) {
+                // Check if the widget is a QPushButton
+                QPushButton* button = qobject_cast<QPushButton*>(widget);
+                button->setText("_");
+            }
+        }
+    }
+
+    // Open the file for reading
+    std::string filename = "savedgame.txt";
+    std::ifstream inputFile(filename);
+
+    // Check if the file is opened successfully
+    if (inputFile.is_open())
+    {
+        // Read each line from the file
+        int x, y;
+        std::string letter;
+        while (inputFile >> x >> y >> letter)
+        {
+            // Replay the moves made
+            // Board should remain disabled.
+            QWidget* widget = grid->itemAtPosition(x, y)->widget();
+            QPushButton* button = qobject_cast<QPushButton*>(widget);
+            button->setText(QString::fromStdString(letter));
+            // Give a slight delay when replaying.
+            qApp->processEvents();
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Not a good way of doing this! This will freeze the entire GUI!
+            // Research QTimer at a later point, potential solution.
+        }
+
+        // Close the file
+        inputFile.close();
+    } else
+    {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+    }
+    // Disable replay button once more
+
 }

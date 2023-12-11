@@ -11,6 +11,7 @@ void GeneralGame::MakeMove(int x, int y)
     {
         this->board[x][y] = this->currentTurn->playerLetter[0];
         this->moveCount++;
+        this->moveHistory.push_back(std::to_string(x) + " " + std::to_string(y) + " " + this->currentTurn->playerLetter[0]);
         // General games will end if the player makes a match
         if(isMatch(x,y))
         {

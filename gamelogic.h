@@ -2,6 +2,7 @@
 #define GAMELOGIC_H
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include <cstdlib> // for RNG in CPU decision making
 #include <algorithm> // temporary
 
@@ -28,6 +29,7 @@ public:
     bool isEmptyCell(int x, int y);
     bool isValidCell(int x, int y);
     bool isMatch(int x, int y);
+    void writeToFile();
 
     virtual void MakeMove(int x, int y);
     virtual void CpuMove();
@@ -35,6 +37,7 @@ public:
 
     Player *currentTurn;
     std::vector<std::vector<char>> board;
+    std::vector<std::string> moveHistory;
     int moveCount;
     Player player1;
     Player player2;

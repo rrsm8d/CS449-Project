@@ -15,7 +15,6 @@ GameLogic::GameLogic(int boardSize)
     this->player1.isCpu = false;
     this->player2.isCpu = false;
     this->currentTurn = &player1;
-    //
     this->moveCount = 0;
     this->isFinished = false;
 }
@@ -96,7 +95,7 @@ void GameLogic::ClearBoard()
     this->player2.playerScore = 0;
     this->isFinished = false;
     this->moveCount = 0;
-
+    this->moveHistory.clear();
     // Is the first player a computer? If so, make its move automatically.
     if(this->currentTurn->isCpu)
         CpuMove();
@@ -224,4 +223,25 @@ bool GameLogic::isS(int x, int y)
     {
         return true;
     } else return false;
+}
+
+void GameLogic::writeToFile()
+{
+    std::string filename = "savedgame.txt";
+    std::ofstream outputFile(filename);
+    // Check if the file is opened successfully
+    if (outputFile.is_open()) {
+        // Write each pair of coordinates to the file
+        for (const auto& coord : this->moveHistory)
+        {
+            // Format the coordinates as "x y S/O" and write to the file
+            outputFile << coord << "\n";
+        }
+        // Close the file
+        outputFile.close();
+        std::cout << "Coordinates written to file: " << filename << std::endl;
+    } else {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+    }
+
 }

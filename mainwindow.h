@@ -6,6 +6,9 @@
 #include "generalgame.h"
 #include <QMainWindow>
 #include <QDebug>
+#include <QTimer> // For delays in replaying
+#include <chrono>
+#include <thread>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -38,5 +41,6 @@ private slots: // Executed whenever a signal is submitted
     void SetPlayerCpu(bool checked); // Change player's controller
 
     void PrintDebugStats(); // debug
+    void ReplayMoves();
 };
 #endif // MAINWINDOW_H
